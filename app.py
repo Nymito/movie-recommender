@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import joblib
 from sklearn.neighbors import NearestNeighbors
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 app = Flask(__name__)
 
@@ -23,12 +25,16 @@ def load_resources():
     else:
         movies = pd.DataFrame(columns=["movieId", "title"])
 
+    # si embeddings.npy est trop gros ou absent, on le recalcule rapidement
     if os.path.exists(EMB_PATH):
         embeddings = np.load(EMB_PATH)
-        # lazy import to keep startup slight
-        knn = NearestNeighbors(metric="cosine", algorithm="auto")
-        knn.fit(embeddings)
+    elif not movies.empty and "soup" in movies.columns:
+        print("➡️ Calcul des embeddings TF-IDF (fallback Render)")
+        tfidf = TfidfVectorizer(max_features=5000, stop_words='english')
+        embeddings = tfidf.fit_transform(movies["soup"].fillna("")).toarray()
 
+    if embeddings is not None:
+        knn = NearestNeighbors(metric="cosine", algorithm="auto").fit(embeddings)
 
 def find_movie_index_by_title(q):
     if movies is None or movies.empty:
