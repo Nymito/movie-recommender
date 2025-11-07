@@ -50,7 +50,7 @@ def find_movie_index_by_title(q):
 
 @app.route("/", methods=["GET"])
 def index():
-    return jsonify({"status": "ok", "message": "Recommender API"}), 200
+    return app.send_static_file("index.html")
 
 @app.route("/recommend", methods=["GET", "POST"])
 def recommend():
@@ -94,10 +94,6 @@ def recommend():
         return jsonify({"query": title, "results": results}), 200
 
     return jsonify({"error": "no recommender available (place movies.csv + embeddings.npy or model.pkl next to app.py)"}), 500
-
-@app.route("/ui", methods=["GET"])
-def ui():
-    return app.send_static_file("index.html")
 
 if __name__ == "__main__":
     load_resources()
