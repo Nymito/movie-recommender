@@ -98,4 +98,4 @@ def recommend():
 if __name__ == "__main__":
     load_resources()
     # debug=False for production; change host/port as needed
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=10000, debug=False)
