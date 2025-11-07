@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 import joblib
+import requests
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -13,6 +14,7 @@ BASE_DIR = os.path.dirname(__file__)
 MOVIES_CSV = os.path.join(BASE_DIR, "movies_soup.csv")
 EMB_PATH = os.path.join(BASE_DIR, "embeddings.npy")
 
+HF_URL = "https://huggingface.co/datasets/gigilamorani/movie-recomender/resolve/main/embeddings.npy"
 
 movies = None
 embeddings = None
@@ -25,13 +27,18 @@ def load_resources():
     else:
         movies = pd.DataFrame(columns=["movieId", "title"])
 
-    # si embeddings.npy est trop gros ou absent, on le recalcule rapidement
+    if not os.path.exists(EMB_PATH):
+        print("⬇️ Téléchargement des embeddings depuis Hugging Face…")
+        r = requests.get(HF_URL, stream=True)
+        r.raise_for_status()
+        with open(EMB_PATH, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print("Embeddings téléchargés avec succès.")
+
     if os.path.exists(EMB_PATH):
         embeddings = np.load(EMB_PATH)
-    elif not movies.empty and "soup" in movies.columns:
-        print("➡️ Calcul des embeddings TF-IDF (fallback Render)")
-        tfidf = TfidfVectorizer(max_features=5000, stop_words='english')
-        embeddings = tfidf.fit_transform(movies["soup"].fillna("")).toarray()
+
 
     if embeddings is not None:
         knn = NearestNeighbors(metric="cosine", algorithm="auto").fit(embeddings)
