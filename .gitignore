@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Environnement virtuel
+venv/
+.env/
+
+# Données temporaires
+*.npy
+*.csv
+*.pkl
+
+# IDE
+.vscode/
+.idea/
+
+# Autres
+.DS_Store
