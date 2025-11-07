@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MOVIES_CSV = os.path.join(BASE_DIR, "movies_soup.csv")
 EMB_PATH = os.path.join(BASE_DIR, "embeddings.npy")
 
@@ -21,6 +21,13 @@ embeddings = None
 knn = None
 
 def load_resources():
+    print("📂 Current directory:", os.getcwd())
+    print("📄 CSV path:", MOVIES_CSV)
+    print("✅ Exists:", os.path.exists(MOVIES_CSV))
+
+    if os.path.exists(MOVIES_CSV):
+        print("File size:", os.path.getsize(MOVIES_CSV), "bytes")
+        print(pd.read_csv(MOVIES_CSV, nrows=3).head())
     global movies, embeddings, knn
     print("Looking for:", MOVIES_CSV, "=> Exists:", os.path.exists(MOVIES_CSV))
 
