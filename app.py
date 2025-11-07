@@ -22,6 +22,8 @@ knn = None
 
 def load_resources():
     global movies, embeddings, knn
+    print("Looking for:", MOVIES_CSV, "=> Exists:", os.path.exists(MOVIES_CSV))
+
     if os.path.exists(MOVIES_CSV):
         movies = pd.read_csv(MOVIES_CSV)
     else:
